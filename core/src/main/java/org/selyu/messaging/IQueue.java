@@ -2,6 +2,8 @@ package org.selyu.messaging;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Responsible for sending objects
  */
@@ -11,5 +13,5 @@ public interface IQueue {
      *
      * @param object The object being sent
      */
-    <T> void post(@NotNull T object);
+    <T> CompletableFuture<Void> post(@NotNull T object);
 }

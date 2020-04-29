@@ -12,11 +12,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractChannel implements IChannel {
     protected final Gson gson;
     protected final Map<Class<?>, Set<Subscriber<?>>> subscribers = new HashMap<>();
     protected final Map<String, IQueue> queues = new HashMap<>();
+    protected final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     protected AbstractChannel(@NotNull Gson gson) {
         this.gson = gson;
@@ -25,6 +29,10 @@ public abstract class AbstractChannel implements IChannel {
     public void parseData(@NotNull String data) {
         // Data is put into a string as: CLASS_NAME, GSON DATA, QUEUE NAME
         String[] split = data.split("@", 3);
+        if (split.length < 3) {
+            return;
+        }
+
         Class<?> type;
 
         try {
@@ -48,8 +56,7 @@ public abstract class AbstractChannel implements IChannel {
     @Override
     public <T> void subscribe(@NotNull T object) {
         for (Method m : object.getClass().getMethods()) {
-            if (!m.canAccess(object))
-                m.setAccessible(true);
+            m.setAccessible(true);
 
             if (!m.isAnnotationPresent(SubscribeQueue.class)) continue;
             if (m.getParameterCount() != 1) continue;
@@ -67,5 +74,10 @@ public abstract class AbstractChannel implements IChannel {
 
             subscribers.put(m.getParameterTypes()[0], subscriberSet);
         }
+    }
+
+    @Override
+    public void shutdown() {
+        executorService.shutdown();
     }
 }

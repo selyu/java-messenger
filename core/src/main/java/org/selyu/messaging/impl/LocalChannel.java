@@ -13,6 +13,6 @@ public final class LocalChannel extends AbstractChannel {
 
     @Override
     public IQueue getQueue(@NotNull String name) {
-        return queues.computeIfAbsent(name, queueName -> new LocalQueue(this, gson, queueName));
+        return queues.computeIfAbsent(name, queueName -> new LocalQueue(this, queueName));
     }
 }

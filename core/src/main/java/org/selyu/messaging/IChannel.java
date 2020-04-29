@@ -31,4 +31,9 @@ public interface IChannel {
             subscribe(object);
         }
     }
+
+    /**
+     * Shutdown method
+     */
+    void shutdown();
 }
