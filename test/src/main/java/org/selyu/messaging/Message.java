@@ -1,4 +1,4 @@
-package org.selyu.messaging.model;
+package org.selyu.messaging;
 
 public final class Message {
     private final String text;
