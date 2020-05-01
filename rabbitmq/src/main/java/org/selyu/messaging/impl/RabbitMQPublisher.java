@@ -2,20 +2,20 @@ package org.selyu.messaging.impl;
 
 import com.rabbitmq.client.Channel;
 import org.jetbrains.annotations.NotNull;
-import org.selyu.messaging.AbstractQueue;
+import org.selyu.messaging.AbstractPublisher;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
-final class RabbitMQQueue extends AbstractQueue {
+final class RabbitMQPublisher extends AbstractPublisher {
     private final Channel channel;
-    private final RabbitMQChannel rabbitMQChannel;
+    private final RabbitMQMessageHandler messageHandler;
 
-    public RabbitMQQueue(RabbitMQChannel rabbitMQChannel, Channel channel, String queue) {
-        super(rabbitMQChannel, queue);
-        this.rabbitMQChannel = rabbitMQChannel;
+    public RabbitMQPublisher(@NotNull RabbitMQMessageHandler messageHandler, @NotNull Channel channel, @NotNull String name) {
+        super(messageHandler, name);
+        this.messageHandler = messageHandler;
         this.channel = channel;
     }
 
@@ -24,7 +24,7 @@ final class RabbitMQQueue extends AbstractQueue {
         return CompletableFuture.runAsync(() -> {
             String encodedData = URLEncoder.encode(data, StandardCharsets.UTF_8);
             try {
-                channel.basicPublish("", rabbitMQChannel.rabbitChannel, null, encodedData.getBytes());
+                channel.basicPublish("", messageHandler.rabbitChannel, null, encodedData.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
             }

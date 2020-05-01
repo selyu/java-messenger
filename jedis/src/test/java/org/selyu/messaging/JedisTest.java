@@ -3,7 +3,7 @@ package org.selyu.messaging;
 import com.github.fppt.jedismock.RedisServer;
 import com.github.fppt.jedismock.server.ServiceOptions;
 import org.junit.Test;
-import org.selyu.messaging.impl.JedisChannel;
+import org.selyu.messaging.impl.JedisMessageHandler;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -21,9 +21,9 @@ public final class JedisTest {
         server.setOptions(options);
         server.start();
 
-        IChannel channel = new JedisChannel("redis://127.0.0.1:9999/0", "test", null);
+        IMessageHandler channel = new JedisMessageHandler("redis://127.0.0.1:9999/0", "test", null);
         channel.subscribe(TestSubscriber.getInstance());
-        channel.getAllQueue().post(new Message("Hello World! from Jedis"));
+        channel.getPublisher().post(new Message("Hello World! from Jedis"));
         Thread.sleep(100);
 
         channel.shutdown();

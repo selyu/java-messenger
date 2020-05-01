@@ -3,17 +3,17 @@ package org.selyu.messaging.impl;
 import redis.clients.jedis.JedisPubSub;
 
 final class ChannelPubSub extends JedisPubSub {
-    private final JedisChannel jedisChannel;
+    private final JedisMessageHandler messageHandler;
     private final Runnable onSubscribe;
 
-    ChannelPubSub(JedisChannel jedisChannel, Runnable onSubscribe) {
-        this.jedisChannel = jedisChannel;
+    ChannelPubSub(JedisMessageHandler messageHandler, Runnable onSubscribe) {
+        this.messageHandler = messageHandler;
         this.onSubscribe = onSubscribe;
     }
 
     @Override
     public void onMessage(String channel, String message) {
-        jedisChannel.parseData(message);
+        messageHandler.parseData(message);
     }
 
     @Override

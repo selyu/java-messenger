@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Responsible for sending objects
  */
-public interface IQueue {
+public interface IPublisher {
     /**
      * "Post" (send) an object through the queue
      *

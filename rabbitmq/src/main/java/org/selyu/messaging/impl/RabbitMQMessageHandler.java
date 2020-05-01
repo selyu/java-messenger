@@ -6,21 +6,21 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.selyu.messaging.AbstractChannel;
-import org.selyu.messaging.IQueue;
+import org.selyu.messaging.AbstractMessageHandler;
+import org.selyu.messaging.IPublisher;
 
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
-public final class RabbitMQChannel extends AbstractChannel {
+public final class RabbitMQMessageHandler extends AbstractMessageHandler {
     protected final String rabbitChannel;
     private final Channel channel;
     private final Connection connection;
 
-    public RabbitMQChannel(@NotNull ConnectionFactory factory, @NotNull String rabbitChannel, @Nullable Gson gson) throws IOException, TimeoutException {
-        super(gson == null ? new Gson() : gson);
+    public RabbitMQMessageHandler(@NotNull ConnectionFactory factory, @NotNull String rabbitChannel, @Nullable Gson gson) throws IOException, TimeoutException {
+        super(gson);
         this.rabbitChannel = rabbitChannel;
 
         connection = factory.newConnection();
@@ -35,8 +35,8 @@ public final class RabbitMQChannel extends AbstractChannel {
     }
 
     @Override
-    public IQueue getQueue(@NotNull String name) {
-        return queues.computeIfAbsent(name, queue -> new RabbitMQQueue(this, channel, queue));
+    public IPublisher getPublisher(@NotNull String name) {
+        return publishers.computeIfAbsent(name, name1 -> new RabbitMQPublisher(this, channel, name));
     }
 
     @Override

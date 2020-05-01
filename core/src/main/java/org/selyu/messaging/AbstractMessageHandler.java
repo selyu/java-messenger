@@ -2,7 +2,8 @@ package org.selyu.messaging;
 
 import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
-import org.selyu.messaging.annotation.SubscribeQueue;
+import org.jetbrains.annotations.Nullable;
+import org.selyu.messaging.annotation.Subscribe;
 import org.selyu.messaging.model.Subscriber;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,14 +16,14 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public abstract class AbstractChannel implements IChannel {
+public abstract class AbstractMessageHandler implements IMessageHandler {
     protected final Gson gson;
     protected final Map<Class<?>, Set<Subscriber<?>>> subscribers = new HashMap<>();
-    protected final Map<String, IQueue> queues = new HashMap<>();
+    protected final Map<String, IPublisher> publishers = new HashMap<>();
     protected final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-    protected AbstractChannel(@NotNull Gson gson) {
-        this.gson = gson;
+    protected AbstractMessageHandler(@Nullable Gson gson) {
+        this.gson = gson == null ? new Gson() : gson;
     }
 
     public void parseData(@NotNull String data) {
@@ -45,7 +46,7 @@ public abstract class AbstractChannel implements IChannel {
         Set<Subscriber<?>> subscribers = this.subscribers.get(type);
         if (subscribers != null) {
             subscribers.forEach(subscriber -> {
-                if (subscriber.getQueue().equals(split[2])) {
+                if (subscriber.getPublisherName().equals(split[2])) {
                     subscriber.getOnReceiveConsumer().accept(gson.fromJson(split[1], (Type) type));
                 }
             });
@@ -57,10 +58,10 @@ public abstract class AbstractChannel implements IChannel {
         for (Method m : object.getClass().getMethods()) {
             m.setAccessible(true);
 
-            if (!m.isAnnotationPresent(SubscribeQueue.class)) continue;
+            if (!m.isAnnotationPresent(Subscribe.class)) continue;
             if (m.getParameterCount() != 1) continue;
 
-            SubscribeQueue annotation = m.getAnnotation(SubscribeQueue.class);
+            Subscribe annotation = m.getAnnotation(Subscribe.class);
             Set<Subscriber<?>> subscriberSet = subscribers.get(m.getParameterTypes()[0]) == null ? new HashSet<>() : subscribers.get(m.getParameterTypes()[0]);
 
             subscriberSet.add(new Subscriber<>(annotation.value(), (obj) -> {
@@ -75,6 +76,9 @@ public abstract class AbstractChannel implements IChannel {
         }
     }
 
+    /**
+     * When extending this class always call {@code super.shutdown()}
+     */
     @Override
     public void shutdown() {
         executorService.shutdown();

@@ -1,6 +1,6 @@
 package org.selyu.messaging;
 
-import org.selyu.messaging.annotation.SubscribeQueue;
+import org.selyu.messaging.annotation.Subscribe;
 
 public final class TestSubscriber {
     private static TestSubscriber INSTANCE;
@@ -11,7 +11,7 @@ public final class TestSubscriber {
         return INSTANCE;
     }
 
-    @SubscribeQueue
+    @Subscribe
     public void onMessageAll(Message message) {
         System.out.println("Got message:" + message.getText());
     }

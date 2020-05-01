@@ -1,16 +1,16 @@
 package org.selyu.messaging.impl;
 
 import org.jetbrains.annotations.NotNull;
-import org.selyu.messaging.AbstractQueue;
+import org.selyu.messaging.AbstractPublisher;
 
 import java.util.concurrent.CompletableFuture;
 
-final class LocalQueue extends AbstractQueue {
-    private final LocalChannel channel;
+final class LocalPublisher extends AbstractPublisher {
+    private final LocalMessageHandler channel;
 
-    public LocalQueue(@NotNull LocalChannel localChannel, @NotNull String queue) {
-        super(localChannel, queue);
-        channel = localChannel;
+    public LocalPublisher(@NotNull LocalMessageHandler channel, @NotNull String name) {
+        super(channel, name);
+        this.channel = channel;
     }
 
     /**
