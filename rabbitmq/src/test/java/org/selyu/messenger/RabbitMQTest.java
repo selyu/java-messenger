@@ -5,8 +5,8 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.selyu.messaging.annotation.Subscribe;
-import org.selyu.messaging.impl.RabbitMQMessageHandler;
+import org.selyu.messenger.api.annotation.Subscribe;
+import org.selyu.messenger.rabbit.RabbitMQMessageHandler;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
