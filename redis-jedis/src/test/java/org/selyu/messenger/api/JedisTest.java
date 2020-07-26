@@ -53,7 +53,7 @@ public final class JedisTest {
             }
         });
         jedisMessageHandler.getPublisher().post("Hello World! from Jedis");
-        countDownLatch.await(1, TimeUnit.SECONDS);
+        countDownLatch.await(5, TimeUnit.SECONDS);
         assertTrue(received[0]);
     }
 

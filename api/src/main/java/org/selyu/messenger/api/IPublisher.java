@@ -5,13 +5,15 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Responsible for sending objects
+ * Responsible for sending objects to a channel
+ * In most cases this will be over a network
  */
 public interface IPublisher {
     /**
-     * "Post" (send) an object through the queue
+     * Parses the {@param object} to a String and sends it-
+     * to a channel
      *
-     * @param object The object being sent
+     * @param object The object
      */
     <T> CompletableFuture<Void> post(@NotNull T object);
 }

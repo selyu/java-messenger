@@ -45,8 +45,8 @@ public final class JedisMessageHandler extends AbstractMessageHandler {
     }
 
     @Override
-    public IPublisher getPublisher(@NotNull String name) {
-        return publishers.computeIfAbsent(name, name1 -> new JedisPublisher(this, pool, redisChannel, name));
+    public IPublisher getPublisher(@NotNull String channel) {
+        return publishers.computeIfAbsent(channel, name1 -> new JedisPublisher(this, pool, redisChannel, channel));
     }
 
     @Override

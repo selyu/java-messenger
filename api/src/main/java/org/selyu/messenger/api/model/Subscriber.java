@@ -4,9 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-/**
- * Helper class
- */
 public final class Subscriber<T> {
     private final String publisherName;
     private final Consumer<T> onReceiveConsumer;

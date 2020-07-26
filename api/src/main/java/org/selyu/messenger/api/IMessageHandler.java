@@ -4,37 +4,44 @@ import org.jetbrains.annotations.NotNull;
 import org.selyu.messenger.api.annotation.Subscribe;
 
 /**
- * Responsible for handling subscriptions and sending objects to {@link IPublisher}s
+ * Handles subscriptions and publishers
  */
 public interface IMessageHandler {
-    /**
-     * Gets a publisher with the name provided
-     *
-     * @param name The name
-     * @return The publisher implementation
-     */
-    IPublisher getPublisher(@NotNull String name);
+    String DEFAULT_CHANNEL = "ALL";
 
+    /**
+     * Gets a publisher with the channel name provided
+     *
+     * @param channel The channel
+     * @return The publisher
+     */
+    IPublisher getPublisher(@NotNull String channel);
+
+    /**
+     * Gets a publisher on the {@link IMessageHandler#DEFAULT_CHANNEL} channel
+     *
+     * @return The publisher
+     */
     default IPublisher getPublisher() {
-        return getPublisher("all");
+        return getPublisher(DEFAULT_CHANNEL);
     }
 
     /**
-     * Subscribe methods annotated with {@link Subscribe} in the object.
+     * Finds every method with annotated with {@link Subscribe} and-
+     * subscribes it to the specified channel {@link Subscribe#value()}
      *
-     * @param object The object being subscribed
+     * @param object The object
      */
-    <T> void subscribe(@NotNull T object);
+    void subscribe(@NotNull Object object);
 
-    @SuppressWarnings("unchecked")
-    default <T> void subscribeMulti(@NotNull T... array) {
-        for (T object : array) {
+    default void subscribe(@NotNull Object... objects) {
+        for (Object object : objects) {
             subscribe(object);
         }
     }
 
     /**
-     * Shutdown method
+     * Shuts down all on-going connections (if present)
      */
     void shutdown();
 }

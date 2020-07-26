@@ -12,7 +12,7 @@ public final class LocalMessageHandler extends AbstractMessageHandler {
     }
 
     @Override
-    public IPublisher getPublisher(@NotNull String name) {
-        return publishers.computeIfAbsent(name, name1 -> new LocalPublisher(this, name));
+    public IPublisher getPublisher(@NotNull String channel) {
+        return publishers.computeIfAbsent(channel, name1 -> new LocalPublisher(this, channel));
     }
 }

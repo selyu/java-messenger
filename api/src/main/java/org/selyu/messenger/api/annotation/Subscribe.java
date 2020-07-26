@@ -8,11 +8,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation is needed for a {@link IMessageHandler} to subscribe the method to the specified queue.
- * {@link Subscribe#value}
+ * Any method that wants to be a subscriber for the first (and only..) parameter-
+ * needs to be annotated with this
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Subscribe {
-    String value() default "all";
+    /**
+     * @return The channel to subscribe to
+     */
+    String value() default IMessageHandler.DEFAULT_CHANNEL;
 }

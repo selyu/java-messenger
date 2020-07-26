@@ -54,31 +54,28 @@ public abstract class AbstractMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public <T> void subscribe(@NotNull T object) {
-        for (Method m : object.getClass().getMethods()) {
-            m.setAccessible(true);
+    public void subscribe(@NotNull Object object) {
+        for (Method method : object.getClass().getMethods()) {
+            method.setAccessible(true);
 
-            if (!m.isAnnotationPresent(Subscribe.class)) continue;
-            if (m.getParameterCount() != 1) continue;
+            if (!method.isAnnotationPresent(Subscribe.class)) continue;
+            if (method.getParameterCount() != 1) continue;
 
-            Subscribe annotation = m.getAnnotation(Subscribe.class);
-            Set<Subscriber<?>> subscriberSet = subscribers.get(m.getParameterTypes()[0]) == null ? new HashSet<>() : subscribers.get(m.getParameterTypes()[0]);
+            Subscribe annotation = method.getAnnotation(Subscribe.class);
+            Set<Subscriber<?>> subscriberSet = subscribers.get(method.getParameterTypes()[0]) == null ? new HashSet<>() : subscribers.get(method.getParameterTypes()[0]);
 
             subscriberSet.add(new Subscriber<>(annotation.value(), (obj) -> {
                 try {
-                    m.invoke(object, obj);
+                    method.invoke(object, obj);
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }));
 
-            subscribers.put(m.getParameterTypes()[0], subscriberSet);
+            subscribers.put(method.getParameterTypes()[0], subscriberSet);
         }
     }
 
-    /**
-     * When extending this class always call {@code super.shutdown()}
-     */
     @Override
     public void shutdown() {
         executorService.shutdown();
