@@ -11,6 +11,10 @@ public final class LocalMessageHandler extends AbstractMessageHandler {
         super(gson);
     }
 
+    void receiveMessage(@NotNull String message) {
+        super.parseMessage(message);
+    }
+
     @Override
     public IPublisher getPublisher(@NotNull String channel) {
         return publishers.computeIfAbsent(channel, name1 -> new LocalPublisher(this, channel));

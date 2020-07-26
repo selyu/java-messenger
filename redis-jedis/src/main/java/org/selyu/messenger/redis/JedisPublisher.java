@@ -5,8 +5,6 @@ import org.selyu.messenger.api.AbstractPublisher;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.util.Pool;
 
-import java.util.concurrent.CompletableFuture;
-
 final class JedisPublisher extends AbstractPublisher {
     private final Pool<Jedis> pool;
     private final String redisChannel;
@@ -18,15 +16,11 @@ final class JedisPublisher extends AbstractPublisher {
     }
 
     @Override
-    public CompletableFuture<Void> postData(@NotNull String data) {
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = pool.getResource()) {
-                long result = jedis.publish(redisChannel, data);
-                if (result == 0) jedis.publish(redisChannel, data);
-            }
-        }, executorService).exceptionally(throwable -> {
-            throwable.printStackTrace();
-            return null;
-        });
+    public void postMessage(@NotNull String message) {
+        try (Jedis jedis = pool.getResource()) {
+            long result = jedis.publish(redisChannel, message);
+            if (result == 0)
+                jedis.publish(redisChannel, message);
+        }
     }
 }

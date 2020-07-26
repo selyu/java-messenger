@@ -4,11 +4,12 @@ import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.selyu.messenger.api.annotation.Subscribe;
+import org.selyu.messenger.api.model.PostedMessage;
 import org.selyu.messenger.api.model.Subscriber;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,7 +19,7 @@ import java.util.concurrent.Executors;
 
 public abstract class AbstractMessageHandler implements IMessageHandler {
     protected final Gson gson;
-    protected final Map<Class<?>, Set<Subscriber<?>>> subscribers = new HashMap<>();
+    protected final Map<Class<?>, Set<Subscriber>> subscribers = new HashMap<>();
     protected final Map<String, IPublisher> publishers = new HashMap<>();
     protected final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
@@ -26,30 +27,22 @@ public abstract class AbstractMessageHandler implements IMessageHandler {
         this.gson = gson == null ? new Gson() : gson;
     }
 
-    public void parseData(@NotNull String data) {
-        // Data is put into a string as: CLASS_NAME, GSON DATA, QUEUE NAME
-        String[] split = data.split("@", 3);
-        if (split.length < 3) {
-            return;
-        }
-
-        Class<?> type;
-
+    protected void parseMessage(@NotNull String message) {
         try {
-            type = Class.forName(split[0]);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
+            PostedMessage<?> postedMessage = PostedMessage.deserialize(message, gson);
+            if (postedMessage == null)
+                return;
 
-        // Get subscribers for type, if null do nothing, else loop through and check if the queue's match, if so get an object from gson and accept the consumer, else nothing
-        Set<Subscriber<?>> subscribers = this.subscribers.get(type);
-        if (subscribers != null) {
-            subscribers.forEach(subscriber -> {
-                if (subscriber.getPublisherName().equals(split[2])) {
-                    subscriber.getOnReceiveConsumer().accept(gson.fromJson(split[1], (Type) type));
+            Set<Subscriber> subscribers = this.subscribers.get(postedMessage.getType());
+            if (subscribers != null) {
+                for (Subscriber subscriber : subscribers) {
+                    if (subscriber.getPublisherName().equals(postedMessage.getChannel())) {
+                        subscriber.getConsumer().accept(postedMessage.getInstance());
+                    }
                 }
-            });
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 
@@ -62,9 +55,9 @@ public abstract class AbstractMessageHandler implements IMessageHandler {
             if (method.getParameterCount() != 1) continue;
 
             Subscribe annotation = method.getAnnotation(Subscribe.class);
-            Set<Subscriber<?>> subscriberSet = subscribers.get(method.getParameterTypes()[0]) == null ? new HashSet<>() : subscribers.get(method.getParameterTypes()[0]);
+            Set<Subscriber> subscriberSet = subscribers.get(method.getParameterTypes()[0]) == null ? new HashSet<>() : subscribers.get(method.getParameterTypes()[0]);
 
-            subscriberSet.add(new Subscriber<>(annotation.value(), (obj) -> {
+            subscriberSet.add(new Subscriber(annotation.value(), (obj) -> {
                 try {
                     method.invoke(object, obj);
                 } catch (IllegalAccessException | InvocationTargetException e) {

@@ -7,6 +7,7 @@ import org.selyu.messenger.api.AbstractMessageHandler;
 import org.selyu.messenger.api.IPublisher;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.util.Pool;
 
 import java.net.URI;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public final class JedisMessageHandler extends AbstractMessageHandler {
     private final Pool<Jedis> pool;
     private final String redisChannel;
-    private final ChannelPubSub pubSub;
+    private final JedisPubSub pubSub;
 
     public JedisMessageHandler(@NotNull String redisURL, @NotNull String redisChannel, @Nullable Gson gson) throws URISyntaxException {
         this(new JedisPool(new URI(redisURL)), redisChannel, gson);
@@ -32,14 +33,23 @@ public final class JedisMessageHandler extends AbstractMessageHandler {
             jedis.ping();
         }
 
-        pubSub = new ChannelPubSub(this, () -> subscribed.set(true));
+        pubSub = new JedisPubSub() {
+            @Override
+            public void onMessage(String channel, String message) {
+                parseMessage(message);
+            }
+
+            @Override
+            public void onSubscribe(String channel, int subscribedChannels) {
+                subscribed.set(true);
+            }
+        };
         executorService.submit(() -> {
             try (Jedis jedis = pool.getResource()) {
                 jedis.subscribe(pubSub, redisChannel);
             }
         });
 
-        //noinspection StatementWithEmptyBody
         while (!subscribed.get()) {
         }
     }

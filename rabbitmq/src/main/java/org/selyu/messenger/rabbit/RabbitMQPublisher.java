@@ -5,9 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.selyu.messenger.api.AbstractPublisher;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.concurrent.CompletableFuture;
 
 final class RabbitMQPublisher extends AbstractPublisher {
     private final Channel channel;
@@ -20,19 +17,11 @@ final class RabbitMQPublisher extends AbstractPublisher {
     }
 
     @Override
-    public CompletableFuture<Void> postData(@NotNull String data) {
-        return CompletableFuture.runAsync(() -> {
-            String encodedData = null;
-            try {
-                encodedData = URLEncoder.encode(data, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            try {
-                channel.basicPublish("", messageHandler.rabbitChannel, null, encodedData.getBytes());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }, executorService);
+    public void postMessage(@NotNull String message) {
+        try {
+            channel.basicPublish("", messageHandler.rabbitChannel, null, message.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

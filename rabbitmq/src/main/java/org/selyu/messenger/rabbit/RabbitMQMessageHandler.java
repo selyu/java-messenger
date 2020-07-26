@@ -29,7 +29,7 @@ public final class RabbitMQMessageHandler extends AbstractMessageHandler {
         channel.basicConsume(rabbitChannel, true, (s, delivery) -> {
             String data = new String(delivery.getBody(), StandardCharsets.UTF_8);
             String decodedData = URLDecoder.decode(data, "UTF-8");
-            parseData(decodedData);
+            parseMessage(decodedData);
         }, ignored -> {
         });
     }

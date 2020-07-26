@@ -4,20 +4,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public final class Subscriber<T> {
+public final class Subscriber {
     private final String publisherName;
-    private final Consumer<T> onReceiveConsumer;
+    private final Consumer<Object> consumer;
 
-    public Subscriber(@NotNull String publisherName, @NotNull Consumer<T> onReceiveConsumer) {
+    public Subscriber(@NotNull String publisherName, @NotNull Consumer<Object> consumer) {
         this.publisherName = publisherName;
-        this.onReceiveConsumer = onReceiveConsumer;
+        this.consumer = consumer;
     }
 
     public @NotNull String getPublisherName() {
         return publisherName;
     }
 
-    public @NotNull Consumer<T> getOnReceiveConsumer() {
-        return onReceiveConsumer;
+    public @NotNull Consumer<Object> getConsumer() {
+        return consumer;
     }
 }
