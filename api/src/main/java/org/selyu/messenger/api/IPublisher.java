@@ -15,5 +15,5 @@ public interface IPublisher {
      *
      * @param object The object
      */
-    <T> CompletableFuture<Void> post(@NotNull T object);
+    CompletableFuture<Void> post(@NotNull Object object);
 }

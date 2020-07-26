@@ -22,7 +22,7 @@ public abstract class AbstractPublisher implements IPublisher {
     protected abstract void postMessage(@NotNull String message);
 
     @Override
-    public <T> CompletableFuture<Void> post(@NotNull T object) {
+    public CompletableFuture<Void> post(@NotNull Object object) {
         return CompletableFuture.runAsync(() -> {
             try {
                 String message = PostedMessage.serialize(object, name, gson);
