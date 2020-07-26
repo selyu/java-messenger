@@ -9,8 +9,8 @@ final class JedisPublisher extends AbstractPublisher {
     private final Pool<Jedis> pool;
     private final String redisChannel;
 
-    public JedisPublisher(@NotNull JedisMessageHandler messageHandler, @NotNull Pool<Jedis> pool, @NotNull String redisChannel, @NotNull String queue) {
-        super(messageHandler, queue);
+    public JedisPublisher(@NotNull JedisMessageHandler messageHandler, @NotNull Pool<Jedis> pool, @NotNull String redisChannel, @NotNull String channel) {
+        super(messageHandler, channel);
         this.pool = pool;
         this.redisChannel = redisChannel;
     }

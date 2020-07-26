@@ -36,7 +36,7 @@ public final class RabbitMQMessageHandler extends AbstractMessageHandler {
 
     @Override
     public IPublisher getPublisher(@NotNull String channel) {
-        return publishers.computeIfAbsent(channel, name1 -> new RabbitMQPublisher(this, this.channel, channel));
+        return publishers.computeIfAbsent(channel, channel1 -> new RabbitMQPublisher(this, this.channel, channel));
     }
 
     @Override

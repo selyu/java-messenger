@@ -4,18 +4,15 @@ import org.jetbrains.annotations.NotNull;
 import org.selyu.messenger.api.AbstractPublisher;
 
 final class LocalPublisher extends AbstractPublisher {
-    private final LocalMessageHandler channel;
+    private final LocalMessageHandler messageHandler;
 
-    public LocalPublisher(@NotNull LocalMessageHandler channel, @NotNull String name) {
-        super(channel, name);
-        this.channel = channel;
+    public LocalPublisher(@NotNull LocalMessageHandler messageHandler, @NotNull String channel) {
+        super(messageHandler, channel);
+        this.messageHandler = messageHandler;
     }
 
-    /**
-     * Since this isn't used over a network we just send it to the channel to parse!
-     */
     @Override
     public void postMessage(@NotNull String message) {
-        channel.receiveMessage(message);
+        messageHandler.receiveMessage(message);
     }
 }

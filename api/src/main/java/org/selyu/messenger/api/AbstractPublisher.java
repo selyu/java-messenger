@@ -11,12 +11,12 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractPublisher implements IPublisher {
     private final ExecutorService executorService;
     private final Gson gson;
-    private final String name;
+    private final String channel;
 
-    public AbstractPublisher(@NotNull AbstractMessageHandler channel, @NotNull String name) {
-        this.executorService = channel.executorService;
-        this.gson = channel.gson;
-        this.name = name;
+    public AbstractPublisher(@NotNull AbstractMessageHandler messageHandler, @NotNull String channel) {
+        this.executorService = messageHandler.executorService;
+        this.gson = messageHandler.gson;
+        this.channel = channel;
     }
 
     protected abstract void postMessage(@NotNull String message);
@@ -25,7 +25,7 @@ public abstract class AbstractPublisher implements IPublisher {
     public CompletableFuture<Void> post(@NotNull Object object) {
         return CompletableFuture.runAsync(() -> {
             try {
-                String message = PostedMessage.serialize(object, name, gson);
+                String message = PostedMessage.serialize(object, channel, gson);
                 postMessage(message);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

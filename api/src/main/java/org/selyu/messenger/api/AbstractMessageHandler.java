@@ -49,10 +49,9 @@ public abstract class AbstractMessageHandler implements IMessageHandler {
     @Override
     public void subscribe(@NotNull Object object) {
         for (Method method : object.getClass().getMethods()) {
+            if (!method.isAnnotationPresent(Subscribe.class) || method.getParameterCount() != 1)
+                continue;
             method.setAccessible(true);
-
-            if (!method.isAnnotationPresent(Subscribe.class)) continue;
-            if (method.getParameterCount() != 1) continue;
 
             Subscribe annotation = method.getAnnotation(Subscribe.class);
             Set<Subscriber> subscriberSet = subscribers.get(method.getParameterTypes()[0]) == null ? new HashSet<>() : subscribers.get(method.getParameterTypes()[0]);
