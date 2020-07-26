@@ -1,7 +1,5 @@
 package org.selyu.messenger.api;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -15,5 +13,5 @@ public interface IPublisher {
      *
      * @param object The object
      */
-    CompletableFuture<Void> post(@NotNull Object object);
+    CompletableFuture<Void> post(Object object);
 }

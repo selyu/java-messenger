@@ -1,8 +1,6 @@
 package org.selyu.messenger.redis;
 
 import com.google.gson.Gson;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.selyu.messenger.api.AbstractMessageHandler;
 import org.selyu.messenger.api.IPublisher;
 import redis.clients.jedis.Jedis;
@@ -14,17 +12,22 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.Objects.requireNonNull;
+
 public final class JedisMessageHandler extends AbstractMessageHandler {
     private final Pool<Jedis> pool;
     private final String redisChannel;
     private final JedisPubSub pubSub;
 
-    public JedisMessageHandler(@NotNull String redisURL, @NotNull String redisChannel, @Nullable Gson gson) throws URISyntaxException {
+    public JedisMessageHandler(String redisURL, String redisChannel, Gson gson) throws URISyntaxException {
         this(new JedisPool(new URI(redisURL)), redisChannel, gson);
     }
 
-    public JedisMessageHandler(@NotNull JedisPool pool, @NotNull String redisChannel, @Nullable Gson gson) {
+    public JedisMessageHandler(JedisPool pool, String redisChannel, Gson gson) {
         super(gson);
+        requireNonNull(pool);
+        requireNonNull(redisChannel);
+
         this.pool = pool;
         this.redisChannel = redisChannel;
 
@@ -55,7 +58,8 @@ public final class JedisMessageHandler extends AbstractMessageHandler {
     }
 
     @Override
-    public IPublisher getPublisher(@NotNull String channel) {
+    public IPublisher getPublisher(String channel) {
+        requireNonNull(channel);
         return publishers.computeIfAbsent(channel, channel1 -> new JedisPublisher(this, pool, redisChannel, channel));
     }
 

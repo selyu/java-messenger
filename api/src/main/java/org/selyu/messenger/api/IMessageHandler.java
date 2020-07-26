@@ -1,6 +1,5 @@
 package org.selyu.messenger.api;
 
-import org.jetbrains.annotations.NotNull;
 import org.selyu.messenger.api.annotation.Subscribe;
 
 /**
@@ -15,7 +14,7 @@ public interface IMessageHandler {
      * @param channel The channel
      * @return The publisher
      */
-    IPublisher getPublisher(@NotNull String channel);
+    IPublisher getPublisher(String channel);
 
     /**
      * Gets a publisher on the {@link IMessageHandler#DEFAULT_CHANNEL} channel
@@ -32,9 +31,9 @@ public interface IMessageHandler {
      *
      * @param object The object
      */
-    void subscribe(@NotNull Object object);
+    void subscribe(Object object);
 
-    default void subscribe(@NotNull Object... objects) {
+    default void subscribe(Object... objects) {
         for (Object object : objects) {
             subscribe(object);
         }

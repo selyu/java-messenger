@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.selyu.messenger.api.AbstractMessageHandler;
 import org.selyu.messenger.api.IPublisher;
 
@@ -14,13 +12,16 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 
+import static java.util.Objects.requireNonNull;
+
 public final class RabbitMQMessageHandler extends AbstractMessageHandler {
     protected final String rabbitChannel;
     private final Channel channel;
     private final Connection connection;
 
-    public RabbitMQMessageHandler(@NotNull ConnectionFactory factory, @NotNull String rabbitChannel, @Nullable Gson gson) throws IOException, TimeoutException {
+    public RabbitMQMessageHandler(ConnectionFactory factory, String rabbitChannel, Gson gson) throws IOException, TimeoutException {
         super(gson);
+        requireNonNull(factory, rabbitChannel);
         this.rabbitChannel = rabbitChannel;
 
         connection = factory.newConnection();
@@ -35,7 +36,8 @@ public final class RabbitMQMessageHandler extends AbstractMessageHandler {
     }
 
     @Override
-    public IPublisher getPublisher(@NotNull String channel) {
+    public IPublisher getPublisher(String channel) {
+        requireNonNull(channel);
         return publishers.computeIfAbsent(channel, channel1 -> new RabbitMQPublisher(this, this.channel, channel));
     }
 

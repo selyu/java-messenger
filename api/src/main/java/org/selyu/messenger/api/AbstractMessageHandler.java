@@ -1,8 +1,6 @@
 package org.selyu.messenger.api;
 
 import com.google.gson.Gson;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.selyu.messenger.api.annotation.Subscribe;
 import org.selyu.messenger.api.model.PostedMessage;
 import org.selyu.messenger.api.model.Subscriber;
@@ -17,17 +15,21 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static java.util.Objects.requireNonNull;
+
 public abstract class AbstractMessageHandler implements IMessageHandler {
     protected final Gson gson;
     protected final Map<Class<?>, Set<Subscriber>> subscribers = new HashMap<>();
     protected final Map<String, IPublisher> publishers = new HashMap<>();
     protected final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-    protected AbstractMessageHandler(@Nullable Gson gson) {
+    protected AbstractMessageHandler(Gson gson) {
         this.gson = gson == null ? new Gson() : gson;
     }
 
-    protected void parseMessage(@NotNull String message) {
+    protected void parseMessage(String message) {
+        requireNonNull(message);
+
         try {
             PostedMessage<?> postedMessage = PostedMessage.deserialize(message, gson);
             if (postedMessage == null)
@@ -47,7 +49,9 @@ public abstract class AbstractMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public void subscribe(@NotNull Object object) {
+    public void subscribe(Object object) {
+        requireNonNull(object);
+
         for (Method method : object.getClass().getMethods()) {
             if (!method.isAnnotationPresent(Subscribe.class) || method.getParameterCount() != 1)
                 continue;
