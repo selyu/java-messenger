@@ -12,7 +12,6 @@
         <module>core</module>
         <module>jedis</module>
         <module>rabbitmq</module>
-        <module>test</module>
     </modules>
 
     <properties>

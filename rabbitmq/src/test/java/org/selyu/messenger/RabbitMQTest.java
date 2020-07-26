@@ -3,8 +3,7 @@ package org.selyu.messenger;
 import com.github.fridujo.rabbitmq.mock.MockConnectionFactory;
 import com.rabbitmq.client.ConnectionFactory;
 import org.junit.Test;
-import org.selyu.messaging.Message;
-import org.selyu.messaging.TestSubscriber;
+import org.selyu.messaging.annotation.Subscribe;
 import org.selyu.messaging.impl.RabbitMQMessageHandler;
 
 import java.io.IOException;
@@ -15,8 +14,14 @@ public final class RabbitMQTest {
     public void run() throws IOException, TimeoutException, InterruptedException {
         ConnectionFactory factory = new MockConnectionFactory();
         RabbitMQMessageHandler channel = new RabbitMQMessageHandler(factory, "test", null);
-        channel.subscribe(TestSubscriber.getInstance());
-        channel.getPublisher().post(new Message("RabbitMQ!!"));
+        channel.subscribe(new Object() {
+            @Subscribe
+            public void hello(String string) {
+                System.out.println(string);
+            }
+        });
+        channel.getPublisher().post("Hello World! from RabbitMQ");
+
         Thread.sleep(100);
     }
 }

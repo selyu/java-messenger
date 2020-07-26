@@ -3,6 +3,7 @@ package org.selyu.messaging;
 import com.github.fppt.jedismock.RedisServer;
 import com.github.fppt.jedismock.server.ServiceOptions;
 import org.junit.Test;
+import org.selyu.messaging.annotation.Subscribe;
 import org.selyu.messaging.impl.JedisMessageHandler;
 
 import java.io.IOException;
@@ -22,9 +23,13 @@ public final class JedisTest {
         server.start();
 
         IMessageHandler channel = new JedisMessageHandler("redis://127.0.0.1:9999/0", "test", null);
-        channel.subscribe(TestSubscriber.getInstance());
-        channel.getPublisher().post(new Message("Hello World! from Jedis"));
-        Thread.sleep(100);
+        channel.subscribe(new Object() {
+            @Subscribe
+            public void hello(String string) {
+                System.out.println(string);
+            }
+        });
+        channel.getPublisher().post("Hello World! from Jedis");
 
         channel.shutdown();
         server.stop();

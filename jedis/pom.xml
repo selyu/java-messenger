@@ -31,12 +31,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.selyu.messaging</groupId>
-            <artifactId>test</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.fppt</groupId>
             <artifactId>jedis-mock</artifactId>
             <version>0.1.16</version>
