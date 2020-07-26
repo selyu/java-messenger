@@ -7,7 +7,7 @@ import org.selyu.messenger.api.annotation.Subscribe;
  * Handles subscriptions and publishers
  */
 public interface IMessageHandler {
-    String DEFAULT_CHANNEL = "ALL";
+    String DEFAULT_CHANNEL = "GLOBAL";
 
     /**
      * Gets a publisher with the channel name provided
