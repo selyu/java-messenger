@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>core</module>
-        <module>jedis</module>
+        <module>redis-jedis</module>
         <module>rabbitmq</module>
     </modules>
 

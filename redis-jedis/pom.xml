@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jedis</artifactId>
+    <artifactId>redis-jedis</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.selyu.messaging</groupId>
