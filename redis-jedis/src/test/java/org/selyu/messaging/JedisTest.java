@@ -10,9 +10,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 public final class JedisTest {
+    private static int MOCK_PORT = 9999;
+
     @Test
     public void run() throws IOException, URISyntaxException, InterruptedException {
-        RedisServer server = RedisServer.newRedisServer(9999);
+        RedisServer server = RedisServer.newRedisServer(MOCK_PORT);
         ServiceOptions options = new ServiceOptions() {
             @Override
             public int autoCloseOn() {
@@ -25,11 +27,18 @@ public final class JedisTest {
         IMessageHandler channel = new JedisMessageHandler("redis://127.0.0.1:9999/0", "test", null);
         channel.subscribe(new Object() {
             @Subscribe
-            public void hello(String string) {
+            public void helloWorld(String string) {
                 System.out.println(string);
+            }
+
+            @Subscribe("NOT_ALL")
+            public void goodbyeWorld(String string) throws Exception {
+                System.out.println("GOODBYE: " + string);
+                throw new Exception("I should not receive this!");
             }
         });
         channel.getPublisher().post("Hello World! from Jedis");
+        Thread.sleep(250);
 
         channel.shutdown();
         server.stop();
