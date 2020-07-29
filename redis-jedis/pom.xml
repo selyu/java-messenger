@@ -15,7 +15,7 @@
             <groupId>org.selyu.messenger</groupId>
             <artifactId>api</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
