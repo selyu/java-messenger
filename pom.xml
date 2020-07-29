@@ -12,6 +12,7 @@
         <module>api</module>
         <module>redis-jedis</module>
         <module>rabbitmq</module>
+        <module>redis-redisson</module>
     </modules>
 
     <properties>
